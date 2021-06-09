@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+  lab2_producer: &lab2
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+    volumes:
+        - .:/home/student/lab2
+    ports:
+      - "22"
+    depends_on:
+      - "rabbitmq"
+    networks:
+      - main
+
+  lab2_consumer:
+    <<: *lab2
+
+  rabbitmq:
+    # default user for localhost:5672 is guest:guest
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ./rabbitmq-data/data/:/var/lib/rabbitmq/mnesia
+        - ./rabbitmq-data/log/:/var/log/rabbitmq/mnesia
+    networks:
+      - main
+
+networks:
+  main:
